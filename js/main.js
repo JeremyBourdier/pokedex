@@ -2,7 +2,7 @@ const listaPokemon = document.querySelector("#listaPokemon");
 const botonesHeader = document.querySelectorAll(".btn-header");
 let URL = "https://pokeapi.co/api/v2/pokemon/";
 
-for (let i = 1; i <= 10; i++) {
+for (let i = 0; i <= 100; i++) {
     fetch(URL + i)
         .then((response) => response.json())
         .then(data => mostrarPokemon(data))
@@ -42,15 +42,57 @@ function mostrarPokemon(poke) {
             </div>
         </div>
     `;
+    div.addEventListener('click', () => mostrarDetallesPokemon(poke));
     listaPokemon.append(div);
 }
+
+function cargarListaInicial() {
+    listaPokemon.innerHTML = ''; // Limpiar lista antes de cargar nuevos Pokémon
+
+    for (let i = 1; i <= 100; i++) {
+        fetch(URL + i)
+            .then(response => response.json())
+            .then(data => mostrarPokemon(data));
+    }
+}
+
+document.querySelector('.nav').addEventListener('click', () => {
+    cargarListaInicial();
+});
+
+cargarListaInicial();
+
+function mostrarDetallesPokemon(poke) {
+    listaPokemon.innerHTML = ''; // Limpia la vista actual
+
+    // Construcción de una vista detallada
+    const detallesHTML = `
+        <div class="pokemon-detalle">
+            <img src="${poke.sprites.other["official-artwork"].front_default}" alt="${poke.name}" class="imagen-detalle">
+            <h2>${poke.name.toUpperCase()}</h2>
+            <p>Id: #${poke.id}</p>
+            <p>Altura: ${poke.height / 10}m</p>
+            <p>Peso: ${poke.weight / 10}kg</p>
+            <p>Tipo(s): ${poke.types.map(type => type.type.name).join(', ')}</p>
+            <p>Estadísticas:</p>
+            <ul>
+                ${poke.stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+
+    listaPokemon.innerHTML = detallesHTML;
+}
+
+
+
 
 botonesHeader.forEach(boton => boton.addEventListener("click", (event) => {
     const botonId = event.currentTarget.id;
 
     listaPokemon.innerHTML = "";
 
-    for (let i = 1; i <= 151; i++) {
+    for (let i = 1; i <= 100; i++) {
         fetch(URL + i)
             .then((response) => response.json())
             .then(data => {
@@ -66,4 +108,6 @@ botonesHeader.forEach(boton => boton.addEventListener("click", (event) => {
 
             })
     }
+
+    
 }))
